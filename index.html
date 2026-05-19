@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#0a0e1a;color:#e8eaf0;min-height:100vh}
+:root{
+  --red:#c0392b;--red-light:#e74c3c;--red-glow:rgba(192,57,43,0.18);
+  --navy:#1a2744;--navy2:#243058;--gold:#d4a017;--gold2:#f0c040;
+  --text:#e8eaf0;--muted:#8892a4;--border:rgba(255,255,255,0.08);
+  --card:#111827;--card2:#16213e;
+}
+.header{background:linear-gradient(135deg,#0a0e1a 0%,#1a2744 50%,#0a0e1a 100%);border-bottom:1px solid var(--border);padding:2rem 1.5rem 1.5rem;text-align:center;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(192,57,43,0.03) 40px,rgba(192,57,43,0.03) 41px)}
+.badge{display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:700;letter-spacing:2px;padding:3px 10px;border-radius:2px;margin-bottom:10px;text-transform:uppercase}
+.header h1{font-size:22px;font-weight:700;color:#fff;letter-spacing:1px}
+.header p{font-size:13px;color:var(--muted);margin-top:6px}
+.matrix-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:1rem 1rem 0.5rem;background:#070c18}
+.matrix-nav .q{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:4px 8px 2px;border-top:1px solid var(--border)}
+.qA{border-top-color:#c0392b!important;color:#e74c3c!important}
+.qB{border-top-color:#2471a3!important;color:#5dade2!important}
+.qC{border-top-color:#1e8449!important;color:#52be80!important}
+.qD{border-top-color:#7d3c98!important;color:#a569bd!important}
+.nav-btn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;background:var(--card);border:0.5px solid var(--border);border-radius:6px;padding:8px 10px;cursor:pointer;transition:all 0.2s;text-align:left}
+.nav-btn:hover{background:var(--navy);border-color:rgba(255,255,255,0.2)}
+.nav-btn.active{background:var(--navy2);border-color:var(--gold)}
+.nav-btn .num{font-size:16px;font-weight:700;line-height:1}
+.nav-btn .lbl{font-size:10px;color:var(--muted);line-height:1.3}
+.n1{color:#e74c3c}.n2{color:#5dade2}.n3{color:#f0c040}.n4{color:#a569bd}
+.n5{color:#52be80}.n6{color:#eb984e}.n7{color:#f1948a}
+.content-area{padding:1rem}
+.crime-card{display:none;animation:fadeIn 0.3s ease}
+.crime-card.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.crime-header{background:var(--card2);border-radius:10px 10px 0 0;padding:1.2rem 1.2rem 1rem;border:0.5px solid var(--border);border-bottom:none}
+.crime-header .tag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.crime-header h2{font-size:20px;font-weight:700;color:#fff}
+.crime-header .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.tabs{display:flex;gap:0;background:var(--card);border:0.5px solid var(--border);border-top:none;border-bottom:none}
+.tab{flex:1;padding:10px 4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all 0.2s;border-bottom:2px solid transparent}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--gold2);border-bottom-color:var(--gold2)}
+.tab-content{background:var(--card);border:0.5px solid var(--border);border-top:none;border-radius:0 0 10px 10px;padding:1.2rem}
+.section{display:none}.section.active{display:block}
+.def-box{background:#0d1526;border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:1rem 1rem;margin-bottom:1rem;font-size:14px;line-height:1.7;color:#c8d0e0}
+.law-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(192,57,43,0.15);border:0.5px solid rgba(192,57,43,0.4);border-radius:4px;padding:4px 10px;font-size:11px;color:#e74c3c;font-weight:600;margin:4px 4px 4px 0}
+.law-badge.new{background:rgba(212,160,23,0.15);border-color:rgba(212,160,23,0.4);color:var(--gold2)}
+.law-badge.baru{background:rgba(52,190,80,0.15);border-color:rgba(52,190,80,0.4);color:#52be80}
+.element-list{list-style:none;margin:1rem 0}
+.element-list li{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;line-height:1.5}
+.element-list li:last-child{border-bottom:none}
+.element-list .dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+.case-card{background:#0d1526;border-radius:8px;padding:1rem;margin-bottom:10px;border:0.5px solid var(--border)}
+.case-card .kasus-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:6px}
+.case-card .kasus-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.pill{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.pill-red{background:rgba(192,57,43,0.2);color:#e74c3c}
+.pill-blue{background:rgba(52,110,190,0.2);color:#5dade2}
+.pill-gold{background:rgba(212,160,23,0.2);color:var(--gold2)}
+.pill-green{background:rgba(52,190,80,0.2);color:#52be80}
+.case-card p{font-size:12px;color:#a0aab8;line-height:1.6}
+.vonis{font-size:12px;color:#52be80;font-weight:600;margin-top:6px}
+.sanction-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:1rem}
+.s-box{background:#0d1526;border-radius:6px;padding:10px;border:0.5px solid var(--border)}
+.s-box .s-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.s-box .s-val{font-size:13px;color:#fff;font-weight:600;line-height:1.4}
+.highlight-box{background:rgba(212,160,23,0.08);border:0.5px solid rgba(212,160,23,0.3);border-radius:8px;padding:1rem;margin:1rem 0;font-size:13px;line-height:1.7;color:#c8d0e0}
+.highlight-box strong{color:var(--gold2)}
+.new-rule{background:rgba(52,190,80,0.08);border:0.5px solid rgba(52,190,80,0.3);border-radius:8px;padding:1rem;margin:1rem 0;font-size:13px;line-height:1.7;color:#c8d0e0}
+.new-rule .nr-header{font-size:11px;font-weight:700;color:#52be80;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+h4{font-size:13px;font-weight:700;color:var(--gold2);margin:1rem 0 6px;text-transform:uppercase;letter-spacing:0.5px}
+.matrix-legend{padding:0.5rem 1rem 1rem;background:#070c18;font-size:11px;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">Editorial Forensic Dossier</div>
+  <h1>Matriks Taksonomi Kejahatan Korupsi</h1>
+  <p>Bedah definisi, unsur delik, kasus, & regulasi terbaru Indonesia</p>
+</div>
+
+<div class="matrix-nav">
+  <div>
+    <div class="q qA">Kiri-Atas: Pejabat / Manipulasi</div>
+    <button class="nav-btn active" onclick="show(1)"><span class="num n1">01</span><span class="lbl">Kerugian Keuangan Negara</span></button>
+    <button class="nav-btn" onclick="show(3)"><span class="num n3">03</span><span class="lbl">Penggelapan dalam Jabatan</span></button>
+  </div>
+  <div>
+    <div class="q qB">Kanan-Atas: Eksternal / Manipulasi</div>
+    <button class="nav-btn" onclick="show(5)"><span class="num n5">05</span><span class="lbl">Perbuatan Curang (Fraud)</span></button>
+    <button class="nav-btn" onclick="show(6)"><span class="num n6">06</span><span class="lbl">Benturan Kepentingan</span></button>
+  </div>
+  <div>
+    <div class="q qC">Kiri-Bawah: Pejabat / Transaksional</div>
+    <button class="nav-btn" onclick="show(4)"><span class="num n4">04</span><span class="lbl">Pemerasan</span></button>
+  </div>
+  <div>
+    <div class="q qD">Kanan-Bawah: Eksternal / Transaksional</div>
+    <button class="nav-btn" onclick="show(2)"><span class="num n2">02</span><span class="lbl">Suap-Menyuap</span></button>
+    <button class="nav-btn" onclick="show(7)"><span class="num n7">07</span><span class="lbl">Gratifikasi</span></button>
+  </div>
+</div>
+<div class="matrix-legend">Pilih nomor untuk membedah setiap kejahatan korupsi</div>
+
+<div class="content-area">
+
+<!-- CARD 1: Kerugian Keuangan Negara -->
+<div class="crime-card active" id="card1">
+  <div class="crime-header">
+    <div class="tag n1">Pasal 2 & 3 — UU No. 31/1999 jo. UU No. 20/2001</div>
+    <h2>01 — Kerugian Keuangan Negara</h2>
+    <div class="sub">State Financial Loss · Kuadran Kiri-Atas · Inisiatif Pejabat + Manipulasi Sistem</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(1,'def')">Definisi</button>
+    <button class="tab" onclick="switchTab(1,'unsur')">Unsur Delik</button>
+    <button class="tab" onclick="switchTab(1,'kasus')">Kasus</button>
+    <button class="tab" onclick="switchTab(1,'sanksi')">Sanksi</button>
+  </div>
+  <div class="tab-content">
+    <div class="section active" id="1-def">
+      <div class="def-box">Setiap orang yang secara melawan hukum melakukan perbuatan memperkaya diri sendiri atau orang lain atau suatu korporasi yang dapat merugikan keuangan negara atau perekonomian negara.</div>
+      <span class="law-badge">Pasal 2 UU 31/1999</span>
+      <span class="law-badge">Pasal 3 UU 20/2001</span>
+      <span class="law-badge">Putusan MK No.25/PUU-XIV/2016</span>
+      <div class="highlight-box">
+        <strong>Pasal 2 vs Pasal 3:</strong> Pasal 2 = perbuatan melawan hukum (PMH) secara formil maupun materiil. Pasal 3 = menyalahgunakan kewenangan/kesempatan/sarana yang ada padanya karena jabatan/kedudukan. Pasal 3 lebih ringan ancamannya karena mensyaratkan hubungan kausal dengan jabatan.
+      </div>
+      <div class="highlight-box">
+        <strong>Putusan MK 2016:</strong> Kerugian negara tidak perlu nyata terjadi — cukup <em>dapat merugikan</em> (potensial). Namun pasca-putusan MK No. 25/PUU-XIV/2016, frasa "dapat merugikan" dinyatakan inkonstitusional bersyarat — kerugian harus nyata dan dapat dihitung.
+      </div>
+    </div>
+    <div class="section" id="1-unsur">
+      <h4>Unsur-Unsur Delik Pasal 2</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#c0392b;color:#fff">1</span><div>Setiap orang — termasuk korporasi</div></li>
+        <li><span class="dot" style="background:#c0392b;color:#fff">2</span><div>Secara melawan hukum — PMH formil atau materiil</div></li>
+        <li><span class="dot" style="background:#c0392b;color:#fff">3</span><div>Memperkaya diri sendiri, orang lain, atau korporasi</div></li>
+        <li><span class="dot" style="background:#c0392b;color:#fff">4</span><div>Merugikan keuangan negara atau perekonomian negara (nyata & dapat dihitung)</div></li>
+      </ul>
+      <h4>Unsur Tambahan Pasal 3</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#7b241c;color:#fff">+</span><div>Menggunakan kewenangan / kesempatan / sarana yang ada padanya karena jabatan atau kedudukan</div></li>
+      </ul>
+    </div>
+    <div class="section" id="1-kasus">
+      <div class="case-card">
+        <div class="kasus-title">Korupsi Dana BOS — Bupati Langkat (2022)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 2 ayat (1)</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">APBD</span></div>
+        <p>Terbit Rencana (Bupati Langkat) terbukti menyalahgunakan dana BOS senilai Rp 1,98 miliar. Selain korupsi, ditemukan kerangkeng manusia di kediamannya.</p>
+        <div class="vonis">Vonis: 9 tahun penjara + denda Rp 600 juta</div>
+      </div>
+      <div class="case-card">
+        <div class="kasus-title">Korupsi e-KTP — Setya Novanto (2018)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 3</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">APBN Rp 2,3 T</span></div>
+        <p>Ketua DPR menyalahgunakan jabatan untuk mengatur proyek e-KTP senilai Rp 5,9 triliun. Kerugian negara mencapai Rp 2,3 triliun.</p>
+        <div class="vonis">Vonis: 15 tahun penjara + denda Rp 500 juta + uang pengganti Rp 7,3 M</div>
+      </div>
+    </div>
+    <div class="section" id="1-sanksi">
+      <div class="sanction-grid">
+        <div class="s-box"><div class="s-label">Pasal 2 — Pidana Penjara</div><div class="s-val">Min. 4 tahun<br>Maks. 20 tahun / seumur hidup</div></div>
+        <div class="s-box"><div class="s-label">Pasal 2 — Denda</div><div class="s-val">Min. Rp 200 juta<br>Maks. Rp 1 miliar</div></div>
+        <div class="s-box"><div class="s-label">Pasal 3 — Pidana Penjara</div><div class="s-val">Min. 1 tahun<br>Maks. 20 tahun / seumur hidup</div></div>
+        <div class="s-box"><div class="s-label">Pasal 3 — Denda</div><div class="s-val">Min. Rp 50 juta<br>Maks. Rp 1 miliar</div></div>
+      </div>
+      <div class="highlight-box"><strong>Hukuman Mati:</strong> Pasal 2 ayat (2) — dapat dijatuhi hukuman mati apabila korupsi dilakukan dalam keadaan tertentu (bencana alam, krisis ekonomi, pengulangan)</div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 2: Suap-Menyuap -->
+<div class="crime-card" id="card2">
+  <div class="crime-header">
+    <div class="tag n2">Pasal 5–13 — UU No. 20/2001</div>
+    <h2>02 — Suap-Menyuap</h2>
+    <div class="sub">Bribery · Kuadran Kanan-Bawah · Kesepakatan Bersama + Transaksional</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(2,'def')">Definisi</button>
+    <button class="tab" onclick="switchTab(2,'unsur')">Unsur Delik</button>
+    <button class="tab" onclick="switchTab(2,'kasus')">Kasus</button>
+    <button class="tab" onclick="switchTab(2,'sanksi')">Sanksi</button>
+  </div>
+  <div class="tab-content">
+    <div class="section active" id="2-def">
+      <div class="def-box">Memberi atau menjanjikan sesuatu kepada pegawai negeri atau penyelenggara negara dengan maksud supaya berbuat atau tidak berbuat sesuatu dalam jabatannya yang bertentangan dengan kewajibannya; atau sebagai akibat atau disebabkan oleh sesuatu yang bertentangan dengan kewajiban.</div>
+      <span class="law-badge">Pasal 5 UU 20/2001 (Pemberi)</span>
+      <span class="law-badge">Pasal 11 UU 20/2001 (Penerima)</span>
+      <span class="law-badge">Pasal 12 UU 20/2001 (Hakim/Advokat)</span>
+      <div class="highlight-box"><strong>Dua Sisi Suap:</strong> Suap bersifat bilateral — ada pemberi (active bribery) dan penerima (passive bribery). Keduanya dapat dipidana secara terpisah. Berbeda dengan gratifikasi yang hanya menyasar penerima.</div>
+    </div>
+    <div class="section" id="2-unsur">
+      <h4>Unsur Pasal 5 (Pemberi)</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#2471a3;color:#fff">1</span><div>Setiap orang</div></li>
+        <li><span class="dot" style="background:#2471a3;color:#fff">2</span><div>Memberi atau menjanjikan sesuatu</div></li>
+        <li><span class="dot" style="background:#2471a3;color:#fff">3</span><div>Kepada pegawai negeri / penyelenggara negara</div></li>
+        <li><span class="dot" style="background:#2471a3;color:#fff">4</span><div>Dengan maksud agar berbuat/tidak berbuat yang bertentangan dengan kewajiban, ATAU menggerakkan agar menggunakan kekuasaan/kewenangannya</div></li>
+      </ul>
+      <h4>Unsur Pasal 11 (Penerima)</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#1a5276;color:#fff">1</span><div>Pegawai negeri atau penyelenggara negara</div></li>
+        <li><span class="dot" style="background:#1a5276;color:#fff">2</span><div>Menerima hadiah atau janji</div></li>
+        <li><span class="dot" style="background:#1a5276;color:#fff">3</span><div>Padahal diketahui atau patut diduga bahwa hadiah tersebut diberikan karena kekuasaan/kewenangan yang berhubungan dengan jabatan</div></li>
+      </ul>
+    </div>
+    <div class="section" id="2-kasus">
+      <div class="case-card">
+        <div class="kasus-title">Suap Hakim PN Surabaya — Itong Isnaeni (2022)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12 huruf c</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">Rp 1,3 M</span></div>
+        <p>Hakim Pengadilan Negeri Surabaya menerima suap terkait penanganan perkara perdata PT Soyu Giri Primedika.</p>
+        <div class="vonis">Vonis: 8 tahun penjara + denda Rp 400 juta</div>
+      </div>
+      <div class="case-card">
+        <div class="kasus-title">Suap Izin Usaha Pertambangan — Gubernur Sultra (2020)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12 huruf a</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">Rp 2,78 M + USD 410 rb</span></div>
+        <p>Nurdin Abdullah menerima suap dari kontraktor dan pengusaha tambang terkait proyek infrastruktur dan perizinan pertambangan di Sulawesi Selatan.</p>
+        <div class="vonis">Vonis: 5 tahun penjara + denda Rp 500 juta</div>
+      </div>
+    </div>
+    <div class="section" id="2-sanksi">
+      <div class="sanction-grid">
+        <div class="s-box"><div class="s-label">Pemberi (Psl 5)</div><div class="s-val">1–5 tahun penjara<br>Denda Rp 50–250 juta</div></div>
+        <div class="s-box"><div class="s-label">Penerima (Psl 11)</div><div class="s-val">1–5 tahun penjara<br>Denda Rp 50–250 juta</div></div>
+        <div class="s-box"><div class="s-label">Hakim/Advokat (Psl 12)</div><div class="s-val">4–20 tahun penjara<br>Denda Rp 200 juta–1 M</div></div>
+        <div class="s-box"><div class="s-label">Tambahan</div><div class="s-val">Pencabutan hak politik<br>Perampasan aset</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 3: Penggelapan dalam Jabatan -->
+<div class="crime-card" id="card3">
+  <div class="crime-header">
+    <div class="tag n3">Pasal 8, 9, 10 — UU No. 20/2001</div>
+    <h2>03 — Penggelapan dalam Jabatan</h2>
+    <div class="sub">Embezzlement in Office · Kuadran Tengah · Inisiatif Pejabat + Manipulasi Aset</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(3,'def')">Definisi</button>
+    <button class="tab" onclick="switchTab(3,'unsur')">Unsur Delik</button>
+    <button class="tab" onclick="switchTab(3,'kasus')">Kasus</button>
+    <button class="tab" onclick="switchTab(3,'sanksi')">Sanksi</button>
+  </div>
+  <div class="tab-content">
+    <div class="section active" id="3-def">
+      <div class="def-box">Pegawai negeri yang menggelapkan uang atau surat berharga yang disimpan karena jabatannya, atau membiarkan penggelapan tersebut, atau membantu melakukan perbuatan tersebut, atau memalsu buku-buku atau daftar-daftar yang khusus untuk pemeriksaan administrasi.</div>
+      <span class="law-badge">Pasal 8 UU 20/2001</span>
+      <span class="law-badge">Pasal 9 UU 20/2001</span>
+      <span class="law-badge">Pasal 10 UU 20/2001</span>
+      <div class="highlight-box"><strong>Inti Delik:</strong> Kunci penggelapan dalam jabatan adalah <em>penguasaan yang sah</em> atas objek korupsi — pelaku memiliki akses legal terhadap uang/barang tersebut karena jabatannya, kemudian diselewengkan.</div>
+    </div>
+    <div class="section" id="3-unsur">
+      <h4>Unsur Pasal 8</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#d4a017;color:#000">1</span><div>Pegawai negeri atau penyelenggara negara</div></li>
+        <li><span class="dot" style="background:#d4a017;color:#000">2</span><div>Menggelapkan, menghancurkan, merusakkan, atau membuat tidak dapat dipakai</div></li>
+        <li><span class="dot" style="background:#d4a017;color:#000">3</span><div>Barang, akta, surat, atau daftar yang digunakan untuk meyakinkan/membuktikan di muka pejabat berwenang</div></li>
+        <li><span class="dot" style="background:#d4a017;color:#000">4</span><div>Yang dikuasai karena jabatannya</div></li>
+      </ul>
+      <h4>Pembeda dengan Pasal 2/3</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#7d6608;color:#fff">△</span><div>Pasal 8–10 tidak mensyaratkan kerugian negara yang dapat dihitung — cukup ada perbuatan manipulasi administratif</div></li>
+      </ul>
+    </div>
+    <div class="section" id="3-kasus">
+      <div class="case-card">
+        <div class="kasus-title">Penggelapan Aset Pertamina — Petral (2015)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 8</span><span class="pill pill-blue">Kejagung</span><span class="pill pill-gold">Rp Triliun</span></div>
+        <p>Kasus manipulasi dokumen dan penggelapan dalam proses pengadaan minyak mentah melalui Pertamina Energy Trading Limited (Petral).</p>
+        <div class="vonis">Status: Dalam proses penyelidikan lanjutan</div>
+      </div>
+      <div class="case-card">
+        <div class="kasus-title">Penggelapan Kas Daerah — Kepala Kas BPKD Kab. Bogor (2021)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 8</span><span class="pill pill-blue">Kejari</span><span class="pill pill-gold">Rp 2,1 M</span></div>
+        <p>Kepala Bidang Perbendaharaan menggelapkan uang kas daerah yang dikuasai karena jabatannya selama periode 2018–2020.</p>
+        <div class="vonis">Vonis: 6 tahun penjara + uang pengganti Rp 2,1 M</div>
+      </div>
+    </div>
+    <div class="section" id="3-sanksi">
+      <div class="sanction-grid">
+        <div class="s-box"><div class="s-label">Pasal 8</div><div class="s-val">3–15 tahun penjara<br>Denda Rp 150 juta–750 juta</div></div>
+        <div class="s-box"><div class="s-label">Pasal 9 (Pemalsuan)</div><div class="s-val">1–5 tahun penjara<br>Denda Rp 50 juta–250 juta</div></div>
+        <div class="s-box"><div class="s-label">Pasal 10 huruf a</div><div class="s-val">2–7 tahun penjara<br>Denda Rp 100 juta–350 juta</div></div>
+        <div class="s-box"><div class="s-label">Pasal 10 huruf b & c</div><div class="s-val">1–3 tahun penjara<br>Denda Rp 50 juta–150 juta</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 4: Pemerasan -->
+<div class="crime-card" id="card4">
+  <div class="crime-header">
+    <div class="tag n4">Pasal 12 huruf e, f, g — UU No. 20/2001</div>
+    <h2>04 — Pemerasan</h2>
+    <div class="sub">Extortion · Kuadran Kiri-Bawah · Inisiatif Pejabat + Transaksional Paksa</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(4,'def')">Definisi</button>
+    <button class="tab" onclick="switchTab(4,'unsur')">Unsur Delik</button>
+    <button class="tab" onclick="switchTab(4,'kasus')">Kasus</button>
+    <button class="tab" onclick="switchTab(4,'sanksi')">Sanksi</button>
+  </div>
+  <div class="tab-content">
+    <div class="section active" id="4-def">
+      <div class="def-box">Pegawai negeri atau penyelenggara negara yang dengan maksud menguntungkan diri sendiri atau orang lain secara melawan hukum, atau dengan menyalahgunakan kekuasaannya memaksa seseorang memberikan sesuatu, membayar, atau menerima pembayaran dengan potongan, atau mengerjakan sesuatu bagi dirinya sendiri.</div>
+      <span class="law-badge">Pasal 12 huruf e UU 20/2001</span>
+      <span class="law-badge">Pasal 12 huruf f UU 20/2001</span>
+      <span class="law-badge">Pasal 12 huruf g UU 20/2001</span>
+      <div class="highlight-box"><strong>Pemerasan vs Suap:</strong> Dalam suap terdapat kesepakatan dua pihak yang sederajat secara moral. Dalam pemerasan, pejabat menggunakan kekuasaan/jabatannya untuk memaksa — pihak yang diperas adalah korban, bukan peserta aktif.</div>
+    </div>
+    <div class="section" id="4-unsur">
+      <h4>Unsur Pasal 12e</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#7d3c98;color:#fff">1</span><div>Pegawai negeri atau penyelenggara negara</div></li>
+        <li><span class="dot" style="background:#7d3c98;color:#fff">2</span><div>Dengan maksud menguntungkan diri sendiri atau orang lain</div></li>
+        <li><span class="dot" style="background:#7d3c98;color:#fff">3</span><div>Secara melawan hukum</div></li>
+        <li><span class="dot" style="background:#7d3c98;color:#fff">4</span><div>Menyalahgunakan kekuasaannya</div></li>
+        <li><span class="dot" style="background:#7d3c98;color:#fff">5</span><div>Memaksa seseorang memberikan sesuatu / membayar / mengerjakan sesuatu</div></li>
+      </ul>
+    </div>
+    <div class="section" id="4-kasus">
+      <div class="case-card">
+        <div class="kasus-title">Pemerasan Izin Operasional — Oknum Dishub DKI (2023)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12e</span><span class="pill pill-blue">Polda Metro</span><span class="pill pill-gold">Rutin Bulanan</span></div>
+        <p>Oknum pegawai Dishub memeras pengemudi angkot dan ojek dengan ancaman tilang/pencabutan izin operasi. Korban dipaksa membayar "setoran" rutin.</p>
+        <div class="vonis">Vonis: 4 tahun penjara</div>
+      </div>
+      <div class="case-card">
+        <div class="kasus-title">Pemerasan DPRD vs Kepala Daerah — Pola Sistematis</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12f</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">Fee APBD</span></div>
+        <p>Pola umum: anggota DPRD memeras kepala OPD/dinas dengan ancaman pemotongan anggaran atau penolakan APBD apabila tidak diberikan "fee proyek".</p>
+        <div class="vonis">Beragam kasus — 3–7 tahun penjara</div>
+      </div>
+    </div>
+    <div class="section" id="4-sanksi">
+      <div class="sanction-grid">
+        <div class="s-box"><div class="s-label">Pidana Penjara</div><div class="s-val">Min. 4 tahun<br>Maks. 20 tahun</div></div>
+        <div class="s-box"><div class="s-label">Denda</div><div class="s-val">Min. Rp 200 juta<br>Maks. Rp 1 miliar</div></div>
+        <div class="s-box"><div class="s-label">Tambahan</div><div class="s-val">Uang pengganti<br>Pencabutan hak</div></div>
+        <div class="s-box"><div class="s-label">Catatan</div><div class="s-val">Korban tidak dipidana karena dalam posisi terpaksa</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 5: Perbuatan Curang -->
+<div class="crime-card" id="card5">
+  <div class="crime-header">
+    <div class="tag n5">Pasal 7, 12 huruf h — UU No. 20/2001</div>
+    <h2>05 — Perbuatan Curang (Fraud)</h2>
+    <div class="sub">Fraud · Kuadran Kanan-Atas · Kesepakatan Eksternal + Manipulasi Sistem</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(5,'def')">Definisi</button>
+    <button class="tab" onclick="switchTab(5,'unsur')">Unsur Delik</button>
+    <button class="tab" onclick="switchTab(5,'kasus')">Kasus</button>
+    <button class="tab" onclick="switchTab(5,'sanksi')">Sanksi</button>
+  </div>
+  <div class="tab-content">
+    <div class="section active" id="5-def">
+      <div class="def-box">Pemborong, ahli bangunan yang pada waktu membuat bangunan melakukan perbuatan curang yang dapat membahayakan keamanan orang atau barang, atau keselamatan negara dalam keadaan perang; atau pengawas proyek yang membiarkan perbuatan curang tersebut.</div>
+      <span class="law-badge">Pasal 7 ayat (1) huruf a UU 20/2001</span>
+      <span class="law-badge">Pasal 7 ayat (1) huruf b, c, d</span>
+      <span class="law-badge">Pasal 12 huruf h</span>
+      <div class="highlight-box"><strong>Konteks Fraud Korupsi:</strong> Dalam taksonomi ini, fraud mencakup kecurangan dalam pengadaan barang/jasa pemerintah, manipulasi dokumen tender, penyerahan barang tidak sesuai spesifikasi, dan kecurangan dalam penerimaan pegawai/taruna.</div>
+    </div>
+    <div class="section" id="5-unsur">
+      <h4>Unsur Pasal 7 ayat (1) huruf a</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#1e8449;color:#fff">1</span><div>Pemborong / ahli bangunan / penjual bahan bangunan</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">2</span><div>Melakukan perbuatan curang pada saat membuat bangunan atau menyerahkan bahan</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">3</span><div>Yang dapat membahayakan keamanan orang/barang atau keselamatan negara</div></li>
+      </ul>
+      <h4>Unsur Pasal 7 ayat (1) huruf d (Pengawas)</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#145a32;color:#fff">1</span><div>Pegawai negeri / penyelenggara negara sebagai pengawas proyek</div></li>
+        <li><span class="dot" style="background:#145a32;color:#fff">2</span><div>Dengan sengaja membiarkan perbuatan curang tersebut</div></li>
+      </ul>
+    </div>
+    <div class="section" id="5-kasus">
+      <div class="case-card">
+        <div class="kasus-title">Proyek Jembatan Fiktif — Dinas PU Kab. Nias (2021)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 7</span><span class="pill pill-blue">Kejari</span><span class="pill pill-gold">Rp 3,2 M</span></div>
+        <p>Kontraktor dan pengawas dinas PU bersekongkol — bangunan jembatan didirikan tidak sesuai spesifikasi teknis (menggunakan material inferior), namun laporan proyek menyatakan selesai 100%.</p>
+        <div class="vonis">Kontraktor: 4,5 tahun | Pengawas: 3 tahun</div>
+      </div>
+      <div class="case-card">
+        <div class="kasus-title">Manipulasi Taruna IPDN — Oknum Panitia (2023)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12h</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">Per Kursi Rp 150 juta</span></div>
+        <p>Panitia seleksi IPDN menerima uang dari peserta dan memanipulasi nilai tes untuk meluluskan peserta yang tidak memenuhi syarat.</p>
+        <div class="vonis">Dalam proses persidangan 2024</div>
+      </div>
+    </div>
+    <div class="section" id="5-sanksi">
+      <div class="sanction-grid">
+        <div class="s-box"><div class="s-label">Pelaku Utama (Psl 7)</div><div class="s-val">2–7 tahun penjara<br>Denda Rp 100–350 juta</div></div>
+        <div class="s-box"><div class="s-label">Pengawas yang Membiarkan</div><div class="s-val">2–7 tahun penjara<br>Denda Rp 100–350 juta</div></div>
+        <div class="s-box"><div class="s-label">Pasal 12h (Seleksi)</div><div class="s-val">4–20 tahun penjara<br>Denda Rp 200 juta–1 M</div></div>
+        <div class="s-box"><div class="s-label">Jika Ada Korban Jiwa</div><div class="s-val">Pemberatan pidana berlaku</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 6: Benturan Kepentingan -->
+<div class="crime-card" id="card6">
+  <div class="crime-header">
+    <div class="tag n6">Pasal 12 huruf i — UU No. 20/2001 + Peraturan KPK</div>
+    <h2>06 — Benturan Kepentingan</h2>
+    <div class="sub">Conflict of Interest · Kuadran Kanan-Atas · Kesepakatan Eksternal + Manipulasi</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(6,'def')">Definisi</button>
+    <button class="tab" onclick="switchTab(6,'unsur')">Unsur Delik</button>
+    <button class="tab" onclick="switchTab(6,'kasus')">Kasus</button>
+    <button class="tab" onclick="switchTab(6,'sanksi')">Sanksi</button>
+  </div>
+  <div class="tab-content">
+    <div class="section active" id="6-def">
+      <div class="def-box">Pegawai negeri atau penyelenggara negara baik langsung maupun tidak langsung dengan sengaja turut serta dalam pemborongan, pengadaan, atau persewaan yang pada saat dilakukan perbuatan tersebut, untuk seluruh atau sebagian ditugaskan untuk mengurus atau mengawasinya.</div>
+      <span class="law-badge">Pasal 12 huruf i UU 20/2001</span>
+      <span class="law-badge">Peraturan KPK No. 2/2019</span>
+      <div class="highlight-box"><strong>Inti Benturan Kepentingan:</strong> Konflik antara kepentingan jabatan (publik) dengan kepentingan pribadi/keluarga/bisnis. Pejabat yang mengurus/mengawasi pengadaan sekaligus memiliki kepentingan dalam perusahaan yang mengikuti pengadaan tersebut.</div>
+    </div>
+    <div class="section" id="6-unsur">
+      <h4>Unsur Pasal 12i</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#d35400;color:#fff">1</span><div>Pegawai negeri atau penyelenggara negara</div></li>
+        <li><span class="dot" style="background:#d35400;color:#fff">2</span><div>Baik langsung maupun tidak langsung, dengan sengaja</div></li>
+        <li><span class="dot" style="background:#d35400;color:#fff">3</span><div>Turut serta dalam pemborongan / pengadaan / persewaan</div></li>
+        <li><span class="dot" style="background:#d35400;color:#fff">4</span><div>Yang saat itu (seluruh/sebagian) ditugaskan untuk mengurus atau mengawasinya</div></li>
+      </ul>
+      <h4>Bentuk-Bentuk Benturan Kepentingan</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#784212;color:#fff">→</span><div>Keputusan yang menguntungkan diri sendiri / keluarga / kelompok</div></li>
+        <li><span class="dot" style="background:#784212;color:#fff">→</span><div>Penggunaan aset jabatan untuk kepentingan pribadi</div></li>
+        <li><span class="dot" style="background:#784212;color:#fff">→</span><div>Informasi rahasia jabatan untuk keuntungan pribadi</div></li>
+        <li><span class="dot" style="background:#784212;color:#fff">→</span><div>Merangkap jabatan pada perusahaan yang berurusan dengan instansinya</div></li>
+      </ul>
+    </div>
+    <div class="section" id="6-kasus">
+      <div class="case-card">
+        <div class="kasus-title">Kadis PU Merangkap Direktur Kontraktor — Kab. Bekasi (2020)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12i</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">Rp 5,7 M</span></div>
+        <p>Kepala Dinas PU secara tidak langsung memiliki saham di CV yang memenangkan tender proyek infrastruktur yang diawasi oleh dinasnya sendiri.</p>
+        <div class="vonis">Vonis: 6 tahun penjara + denda Rp 300 juta</div>
+      </div>
+      <div class="case-card">
+        <div class="kasus-title">Komisioner KPPU Intervensi Perkara — (2019)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12i + LHKPN</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">Rp 1,9 M</span></div>
+        <p>Anggota KPPU menerima suap dan memiliki kepentingan dalam pihak yang berperkara di komisinya, sehingga mempengaruhi hasil putusan persaingan usaha.</p>
+        <div class="vonis">Vonis: 7 tahun penjara</div>
+      </div>
+    </div>
+    <div class="section" id="6-sanksi">
+      <div class="sanction-grid">
+        <div class="s-box"><div class="s-label">Pidana Penjara</div><div class="s-val">Min. 4 tahun<br>Maks. 20 tahun</div></div>
+        <div class="s-box"><div class="s-label">Denda</div><div class="s-val">Min. Rp 200 juta<br>Maks. Rp 1 miliar</div></div>
+        <div class="s-box"><div class="s-label">Administratif</div><div class="s-val">Wajib deklarasi & pengunduran diri dari jabatan berkonflik</div></div>
+        <div class="s-box"><div class="s-label">Pencegahan</div><div class="s-val">LHKPN wajib dilaporkan & diverifikasi KPK</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 7: Gratifikasi -->
+<div class="crime-card" id="card7">
+  <div class="crime-header">
+    <div class="tag" style="color:#f1948a">Pasal 12B & 12C — UU 20/2001 · PERATURAN KPK NO. 1 TAHUN 2026 ★ TERBARU</div>
+    <h2>07 — Gratifikasi</h2>
+    <div class="sub">Unlawful Gratuity · Kuadran Kanan-Bawah · Transaksional / Inisiatif Pemberi</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(7,'def')">Definisi</button>
+    <button class="tab" onclick="switchTab(7,'unsur')">Unsur & Kategori</button>
+    <button class="tab" onclick="switchTab(7,'baru')">Peraturan 2026</button>
+    <button class="tab" onclick="switchTab(7,'kasus')">Kasus</button>
+    <button class="tab" onclick="switchTab(7,'sanksi')">Sanksi</button>
+  </div>
+  <div class="tab-content">
+    <div class="section active" id="7-def">
+      <div class="def-box">Gratifikasi kepada pegawai negeri atau penyelenggara negara dianggap pemberian suap apabila berhubungan dengan jabatannya dan berlawanan dengan kewajiban atau tugasnya. Gratifikasi meliputi pemberian uang, barang, rabat (diskon), komisi, pinjaman tanpa bunga, tiket perjalanan, fasilitas penginapan, perjalanan wisata, pengobatan cuma-cuma, dan fasilitas lainnya.</div>
+      <span class="law-badge">Pasal 12B UU 20/2001</span>
+      <span class="law-badge">Pasal 12C UU 20/2001</span>
+      <span class="law-badge new">Peraturan KPK No. 1 Tahun 2026 ★</span>
+      <div class="highlight-box"><strong>Gratifikasi ≠ Suap:</strong> Gratifikasi tidak mensyaratkan adanya kesepakatan (deal) sebelumnya antara pemberi dan penerima. Pemberian dapat bersifat satu arah — namun tetap dipidana jika berhubungan dengan jabatan dan tidak dilaporkan dalam 30 hari kerja.</div>
+    </div>
+    <div class="section" id="7-unsur">
+      <h4>Unsur Pasal 12B</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#922b21;color:#fff">1</span><div>Pegawai negeri atau penyelenggara negara</div></li>
+        <li><span class="dot" style="background:#922b21;color:#fff">2</span><div>Menerima gratifikasi</div></li>
+        <li><span class="dot" style="background:#922b21;color:#fff">3</span><div>Berhubungan dengan jabatannya</div></li>
+        <li><span class="dot" style="background:#922b21;color:#fff">4</span><div>Berlawanan dengan kewajiban atau tugasnya</div></li>
+      </ul>
+      <h4>Kategori Gratifikasi Terlarang</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#641e16;color:#fff">✗</span><div>Pemberian terkait pengambilan keputusan/kebijakan pejabat</div></li>
+        <li><span class="dot" style="background:#641e16;color:#fff">✗</span><div>Pemberian dalam proses perizinan, pengadaan, rekrutmen</div></li>
+        <li><span class="dot" style="background:#641e16;color:#fff">✗</span><div>Pemberian saat pemeriksaan/audit/pengawasan</div></li>
+        <li><span class="dot" style="background:#641e16;color:#fff">✗</span><div>Pemberian oleh pihak yang memiliki konflik kepentingan dengan jabatan penerima</div></li>
+      </ul>
+      <h4>Gratifikasi yang TIDAK Terlarang (sesuai regulasi)</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#1e8449;color:#fff">✓</span><div>Pemberian dari keluarga yang tidak memiliki konflik kepentingan</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">✓</span><div>Hadiah/tanda terima kasih setelah proses selesai dan tidak terkait jabatan</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">✓</span><div>Hidangan/jamuan dalam batas kewajaran acara resmi</div></li>
+      </ul>
+    </div>
+    <div class="section" id="7-baru">
+      <div class="new-rule">
+        <div class="nr-header">★ Peraturan KPK Nomor 1 Tahun 2026 — Pengendalian Gratifikasi</div>
+        <p>Peraturan KPK No. 1 Tahun 2026 merupakan pembaruan atas Peraturan KPK No. 2 Tahun 2019. Regulasi ini memperkuat sistem pelaporan dan pengelolaan gratifikasi dengan beberapa perubahan signifikan:</p>
+      </div>
+      <h4>Perubahan Utama Peraturan KPK 1/2026</h4>
+      <ul class="element-list">
+        <li><span class="dot" style="background:#1e8449;color:#fff">1</span><div><strong style="color:#52be80">Digitalisasi Penuh:</strong> Seluruh pelaporan gratifikasi wajib melalui platform digital terintegrasi — aplikasi JAGA KPK, tidak lagi dapat dilaporkan manual.</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">2</span><div><strong style="color:#52be80">Unit Pengendali Gratifikasi (UPG):</strong> Setiap K/L/D wajib memiliki UPG yang terdaftar dan berkoordinasi langsung dengan KPK. UPG bertanggung jawab atas proses verifikasi internal sebelum diteruskan ke KPK.</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">3</span><div><strong style="color:#52be80">Threshold Nilai:</strong> Gratifikasi dengan nilai di bawah Rp 500.000 (turun dari Rp 1.000.000) per pemberian wajib tetap dilaporkan namun tidak otomatis dianggap suap jika tidak ada benturan kepentingan nyata.</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">4</span><div><strong style="color:#52be80">Gratifikasi Digital:</strong> Peraturan 2026 secara eksplisit mencakup voucher digital, aset kripto, NFT, poin loyalty bernilai ekonomis, dan layanan premium digital sebagai objek gratifikasi.</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">5</span><div><strong style="color:#52be80">Perluasan Subjek:</strong> Memperluas cakupan ke pejabat BUMD tingkat desa/kelurahan dan pengelola dana desa (APBDes) yang sebelumnya berada di zona abu-abu.</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">6</span><div><strong style="color:#52be80">Batas Waktu Tetap 30 Hari Kerja</strong> sejak diterimanya gratifikasi. Pelanggaran batas waktu dikenakan sanksi administratif terlebih dahulu sebelum pidana.</div></li>
+        <li><span class="dot" style="background:#1e8449;color:#fff">7</span><div><strong style="color:#52be80">Pembuktian Terbalik:</strong> Mempertahankan asas pembuktian terbalik — penerima wajib membuktikan gratifikasi tidak terkait jabatan. Berlaku untuk nilai di atas Rp 10 juta.</div></li>
+      </ul>
+      <div class="highlight-box"><strong>Implikasi Praktis:</strong> Pejabat yang menerima "parsel lebaran" senilai Rp 1 juta dari vendor yang memiliki kontrak dengan instansinya WAJIB melaporkan. Jika tidak dilaporkan dalam 30 hari kerja dan terbukti berhubungan dengan jabatan, berlaku dianggap suap (Pasal 12B).</div>
+    </div>
+    <div class="section" id="7-kasus">
+      <div class="case-card">
+        <div class="kasus-title">Gratifikasi Pejabat MA — Zarof Ricar (2024)</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12B</span><span class="pill pill-blue">KPK</span><span class="pill pill-gold">Rp 920 M + 51 kg emas</span></div>
+        <p>Mantan pejabat Mahkamah Agung menerima gratifikasi senilai ratusan miliar rupiah dan puluhan kg emas dari berbagai pihak berperkara selama bertahun-tahun menjabat.</p>
+        <div class="vonis">Dalam proses persidangan 2025 — tuntutan seumur hidup</div>
+      </div>
+      <div class="case-card">
+        <div class="kasus-title">Gratifikasi Kepala Daerah — Parsel Idul Fitri Sistematis</div>
+        <div class="kasus-meta"><span class="pill pill-red">Pasal 12B</span><span class="pill pill-blue">KPK / Polda</span><span class="pill pill-gold">Rp 50–500 juta/tahun</span></div>
+        <p>Sejumlah kepala dinas menerima parsel dan bingkisan bernilai jutaan rupiah dari rekanan proyek secara rutin setiap hari raya. Tidak dilaporkan sebagai gratifikasi.</p>
+        <div class="vonis">Beragam kasus: 2–5 tahun penjara</div>
+      </div>
+    </div>
+    <div class="section" id="7-sanksi">
+      <div class="sanction-grid">
+        <div class="s-box"><div class="s-label">Nilai ≥ Rp 10 juta</div><div class="s-val">4–20 tahun penjara<br>Pembuktian terbalik berlaku</div></div>
+        <div class="s-box"><div class="s-label">Nilai &lt; Rp 10 juta</div><div class="s-val">Jaksa wajib buktikan<br>1–5 tahun penjara</div></div>
+        <div class="s-box"><div class="s-label">Denda</div><div class="s-val">Rp 200 juta – Rp 1 miliar</div></div>
+        <div class="s-box"><div class="s-label">Jika Dilaporkan</div><div class="s-val">Bebas pidana — diserahkan ke KPK untuk dimanfaatkan bagi negara</div></div>
+      </div>
+      <div class="new-rule"><div class="nr-header">★ Mekanisme Pengaman</div>Jika penerima melaporkan gratifikasi ke KPK dalam 30 hari kerja, TIDAK dipidana. Gratifikasi yang dilaporkan diserahkan ke kas negara atau dikembalikan ke pemberi setelah KPK memverifikasi.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function show(n){
+  document.querySelectorAll('.crime-card').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('card'+n).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b=>{if(b.getAttribute('onclick')==='show('+n+')')b.classList.add('active')});
+}
+function switchTab(card,tab){
+  const c=document.getElementById('card'+card);
+  c.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  c.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(card+'-'+tab).classList.add('active');
+}
+</script>
+</body>
+</html>
